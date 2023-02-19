@@ -261,74 +261,9 @@ void TutorialGame::UpdateGame(float dt) {
 			UpdateMainPlayerMovement(dt);
 
 			if (debug) {
-
-				if (lockedObject != nullptr) {
-					Vector3 objPos = lockedObject->GetTransform().GetPosition();
-					Vector3 camPos = objPos + lockedOffset;
-
-					Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
-
-					Matrix4 modelMat = temp.Inverse();
-
-					Quaternion q(modelMat);
-					Vector3 angles = q.ToEuler(); //nearly there now!
-
-					world->GetMainCamera()->SetPosition(camPos);
-					world->GetMainCamera()->SetPitch(angles.x);
-					world->GetMainCamera()->SetYaw(angles.y);
-				}
-
-				Debug::Print("world trigger:" + std::to_string(world->GetTrigger()), Vector2(5, 25));
-
-				if (useGravity) {
-					Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
-				}
-				else {
-					Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
-				}
-				switch (gravityDirection) {
-				case 1:
-					Debug::Print("Gravity direction: DOWN", Vector2(5, 80), Debug::RED);
-					break;
-				case 2:
-					Debug::Print("Gravity direction: UP", Vector2(5, 80), Debug::RED);
-					break;
-				case 3:
-					Debug::Print("Gravity direction: LEFT", Vector2(5, 80), Debug::RED);
-					break;
-				case 4:
-					Debug::Print("Gravity direction: RIGHT", Vector2(5, 80), Debug::RED);
-					break;
-				}
-
-				Debug::Print("Linear Damping:" + std::to_string(linearDamping), Vector2(5, 75), Debug::RED);
-
-
-				RayCollision closestCollision;
-				if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K) && selectionObject) {
-					Vector3 rayPos;
-					Vector3 rayDir;
-
-					rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);//Identify front vector
-
-					rayPos = selectionObject->GetTransform().GetPosition();
-
-					Ray r = Ray(rayPos, rayDir);
-
-					if (world->Raycast(r, closestCollision, true, selectionObject, selectionObject->GetIgnoreLayer())) {
-						if (objClosest) {
-							objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-						}
-						objClosest = (GameObject*)closestCollision.node;
-
-						objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
-						Debug::DrawLine(rayPos, closestCollision.collidedAt, Vector4(1, 0, 0, 1), 10);
-					}
-				}
-
-				Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
-				SelectObject();
-				MoveSelectedObject();
+				UpdateDebugKeys();
+				UpdateDebugState();
+				
 			}
 			world->UpdateWorld(dt);
 			renderer->Update(dt);
@@ -352,6 +287,142 @@ void TutorialGame::UpdateGame(float dt) {
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
+}
+
+void TutorialGame::UpdateDebugState() {
+	if (lockedObject != nullptr) {
+		Vector3 objPos = lockedObject->GetTransform().GetPosition();
+		Vector3 camPos = objPos + lockedOffset;
+
+		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
+
+		Matrix4 modelMat = temp.Inverse();
+
+		Quaternion q(modelMat);
+		Vector3 angles = q.ToEuler(); //nearly there now!
+
+		world->GetMainCamera()->SetPosition(camPos);
+		world->GetMainCamera()->SetPitch(angles.x);
+		world->GetMainCamera()->SetYaw(angles.y);
+	}
+
+	Debug::Print("world trigger:" + std::to_string(world->GetTrigger()), Vector2(5, 25));
+
+	if (useGravity) {
+		Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
+	}
+	else {
+		Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
+	}
+	switch (gravityDirection) {
+	case 1:
+		Debug::Print("Gravity direction: DOWN", Vector2(5, 80), Debug::RED);
+		break;
+	case 2:
+		Debug::Print("Gravity direction: UP", Vector2(5, 80), Debug::RED);
+		break;
+	case 3:
+		Debug::Print("Gravity direction: LEFT", Vector2(5, 80), Debug::RED);
+		break;
+	case 4:
+		Debug::Print("Gravity direction: RIGHT", Vector2(5, 80), Debug::RED);
+		break;
+	}
+
+	Debug::Print("Linear Damping:" + std::to_string(linearDamping), Vector2(5, 75), Debug::RED);
+
+
+	RayCollision closestCollision;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K) && selectionObject) {
+		Vector3 rayPos;
+		Vector3 rayDir;
+
+		rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);//Identify front vector
+
+		rayPos = selectionObject->GetTransform().GetPosition();
+
+		Ray r = Ray(rayPos, rayDir);
+
+		if (world->Raycast(r, closestCollision, true, selectionObject, selectionObject->GetIgnoreLayer())) {
+			if (objClosest) {
+				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+			}
+			objClosest = (GameObject*)closestCollision.node;
+
+			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
+			Debug::DrawLine(rayPos, closestCollision.collidedAt, Vector4(1, 0, 0, 1), 10);
+		}
+	}
+
+	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
+	SelectObject();
+	MoveSelectedObject();
+}
+
+void NCL::CSC8503::TutorialGame::UpdateDebugKeys()
+{
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
+		physics->SetGravity(Vector3(0.0f, 9.8f, 0.0f));
+		gravityDirection = 2;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM8)) {
+		physics->SetGravity(Vector3(-9.8f, 0.0f, 0.0f));
+		gravityDirection = 3;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM9)) {
+		physics->SetGravity(Vector3(0.0f, -9.8f, 0.0f));
+		gravityDirection = 1;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
+		physics->SetGravity(Vector3(9.8f, 0.0f, 0.0f));
+		gravityDirection = 4;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::MINUS)) {
+		linearDamping -= 0.01;
+		physics->SetLinearDamping(linearDamping);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PLUS)) {
+		linearDamping += 0.01;
+		physics->SetLinearDamping(linearDamping);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
+		InitCamera(); //F2 will reset the camera to a specific default place
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
+		MoveMainPlayer(); //F3 will toggle the camera and player movements
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
+		world->SetTrigger(4);
+
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
+		world->SetTrigger(8);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
+		world->SetTrigger(0);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G)) {
+		useGravity = !useGravity; //Toggle gravity!
+		physics->UseGravity(useGravity);
+	}
+
+	if (lockedObject) {
+		LockedObjectMovement();
+	}
+	else {
+		DebugObjectMovement();
+	}
 }
 
 void TutorialGame::CheckState() {
@@ -378,72 +449,7 @@ void TutorialGame::UpdateKeys() {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
 		InitWorld(); //We can reset the simulation at any time with F1
 		selectionObject = nullptr;
-	}
-	if (debug) {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
-			physics->SetGravity(Vector3(0.0f, 9.8f, 0.0f));
-			gravityDirection = 2;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM8)) {
-			physics->SetGravity(Vector3(-9.8f, 0.0f, 0.0f));
-			gravityDirection = 3;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM9)) {
-			physics->SetGravity(Vector3(0.0f, -9.8f, 0.0f));
-			gravityDirection = 1;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
-			physics->SetGravity(Vector3(9.8f, 0.0f, 0.0f));
-			gravityDirection = 4;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::MINUS)) {
-			linearDamping -= 0.01;
-			physics->SetLinearDamping(linearDamping);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PLUS)) {
-			linearDamping += 0.01;
-			physics->SetLinearDamping(linearDamping);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
-			InitCamera(); //F2 will reset the camera to a specific default place
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
-			MoveMainPlayer(); //F3 will toggle the camera and player movements
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
-			world->SetTrigger(4);
-
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
-			world->SetTrigger(8);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
-			world->SetTrigger(0);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G)) {
-			useGravity = !useGravity; //Toggle gravity!
-			physics->UseGravity(useGravity);
-		}
-
-		if (lockedObject) {
-			LockedObjectMovement();
-		}
-		else {
-			DebugObjectMovement();
-		}
-	}
-	
+	}	
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
 	//allowing the other one to stretch too much etc. Shuffling the order so that it
