@@ -171,6 +171,7 @@ void TutorialGame::UpdateGame(float dt) {
 			currentScene++;
 			if (currentScene == maxScene) {
 				world->ToggleTriggerbit(4);// bit 4 to check win game
+				world->ToggleTriggerbit(0);
 			}
 			else {
 				InitWorld();
@@ -577,8 +578,6 @@ void TutorialGame::InitWorld() {
 	//InitGoatGameWorld();
 	//AddWallToWorld(Vector3(0, 0, 0),1);
 	//InitGameWorldFromFile("TestGrid2.txt");
-	
-	world->SetTrigger(0);
 }
 
 void TutorialGame::MoveMainPlayer() {
