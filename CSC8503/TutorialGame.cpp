@@ -430,7 +430,7 @@ void TutorialGame::CheckState() {
 	for (int i = 0; i < states.size(); i++) {
 		if ((!states[i]->IsActive() || states[i]->ToDelete()) && !states[i]->IsAdded()) {
 			score += states[i]->GetScore();
-			if (states[i]->GetObjectType() == 7) itemCount--;
+			if (states[i]->GetObjectType() == ObjectId::OBSTACLE) itemCount--;
 			states[i]->SetAdded(true);
 		}
 		if(states[i]->ToDelete()){
@@ -929,7 +929,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position, int size) {
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(1);
+	floor->SetObjectType(ObjectId::WORLD);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -955,7 +955,7 @@ GameObject* TutorialGame::AddSpringToWorld(const Vector3& position, int size) {
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(14);
+	floor->SetObjectType(ObjectId::SPRING);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -1006,7 +1006,7 @@ BonusStateObject* TutorialGame::AddHealingZoneToWorld(const Vector3& position, i
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(3);
+	floor->SetObjectType(ObjectId::HEALTHBONUS);
 	floor->SetBonusValue(0.5);
 
 	world->AddGameObject(floor);
@@ -1032,7 +1032,7 @@ BonusStateObject* TutorialGame::AddMudZoneToWorld(const Vector3& position, int s
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(6);
+	floor->SetObjectType(ObjectId::SPEEDREDUCTION);
 	floor->SetBonusValue(0.1f);
 
 	world->AddGameObject(floor);
@@ -1058,7 +1058,7 @@ BonusStateObject* TutorialGame::AddIceZoneToWorld(const Vector3& position, int s
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(4);
+	floor->SetObjectType(ObjectId::SPEEDBONUS);
 	floor->SetBonusValue(0.05f);
 
 	world->AddGameObject(floor);
@@ -1085,7 +1085,7 @@ BonusStateObject* TutorialGame::AddLavaZoneToWorld(const Vector3& position, int 
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(5);
+	floor->SetObjectType(ObjectId::HEALTHREDUCTION);
 	floor->SetBonusValue(0.5);
 
 	world->AddGameObject(floor);
@@ -1416,7 +1416,7 @@ BonusStateObject* TutorialGame::AddSpeedBonusToWorld(const Vector3& position)
 	apple->GetPhysicsObject()->InitSphereInertia();
 	apple->SetLayer(4);
 	apple->SetIgnoreLayer(128);
-	apple->SetObjectType(4);
+	apple->SetObjectType(ObjectId::SPEEDBONUS);
 	apple->SetBonusValue(0.5);
 	apple->SetScore(100);
 
@@ -1446,7 +1446,7 @@ WinStateObject* TutorialGame::AddKeyToWorld(const Vector3& position)
 	apple->GetPhysicsObject()->InitSphereInertia();
 	apple->SetLayer(4);
 	apple->SetIgnoreLayer(128);
-	apple->SetObjectType(11);
+	apple->SetObjectType(ObjectId::KEY);
 
 	world->AddGameObject(apple);
 
