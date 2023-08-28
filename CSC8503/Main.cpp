@@ -260,7 +260,7 @@ hide or show the
 */
 int main() {
 
-	TestBehaviourTree();
+	//TestBehaviourTree();
 	Window*w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
 	if (!w->HasInitialised()) {
@@ -271,8 +271,8 @@ int main() {
 	w->LockMouseToWindow(true);
 	
 	//TestStateMachine();
-	TestPathfinding();
-	TestNetworking();
+	//TestPathfinding();
+	//TestNetworking();
 	
 	TutorialGame* g = new TutorialGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
