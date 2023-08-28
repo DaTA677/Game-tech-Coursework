@@ -9,20 +9,20 @@ WinStateObject::WinStateObject(std::string name):GameObject(name) {
 
 	SetLayer(1);
 	SetIgnoreLayer(128);
-	SetObjectType(10);
+	SetObjectType(ObjectId::WIN);
 }
 
 void WinStateObject::OnCollisionBegin(GameObject* object) {
-	if (GetObjectType()==10 && object->GetObjectType() == 2) {
+	if (GetObjectType()== ObjectId::WIN && object->GetObjectType() == ObjectId::PLAYER) {
 		world->ToggleTriggerbit(0);
 	}
-	if(GetObjectType() == 11 && object->GetObjectType() == 2) {
+	if(GetObjectType() == ObjectId::KEY && object->GetObjectType() == ObjectId::PLAYER) {
 		world->ToggleTriggerbit(3);
 	}
 }
 
 void WinStateObject::OnCollisionEnd(GameObject* object) {
-	if (GetObjectType() == 11 && object->GetObjectType() == 2) {
+	if (GetObjectType() == ObjectId::KEY && object->GetObjectType() == ObjectId::PLAYER) {
 		isActive = false;
 	}
 }

@@ -47,23 +47,23 @@ PlayerStateObject::PlayerStateObject(std::string name) :StateGameObject(name) {
 	stateMachine->AddTransition(idleToNormal);
 	stateMachine->AddTransition(normalToIdle);
 
-	SetObjectType(2);
+	SetObjectType(ObjectId::PLAYER);
 
 }
 
 void PlayerStateObject::OnCollisionBegin(GameObject* object)
 {
-	if (object->GetObjectType() == 3) {
+	if (object->GetObjectType() == ObjectId::HEALTHBONUS) {
 		float tempHealth = (health + ((BonusStateObject*)object)->GetBonusValue());
 		if (tempHealth > maxHealth) health = maxHealth;
 		else health = tempHealth;
 	}
-	if (object->GetObjectType() == 5) health = health - ((BonusStateObject*)object)->GetBonusValue();
-	if (object->GetObjectType() == 4) {
+	if (object->GetObjectType() == ObjectId::HEALTHREDUCTION) health = health - ((BonusStateObject*)object)->GetBonusValue();
+	if (object->GetObjectType() == ObjectId::SPEEDBONUS) {
 		BonusStateObject* bonus = ((BonusStateObject*)object);
 		GetPhysicsObject()->SetLinearVelocity(GetPhysicsObject()->GetLinearVelocity() * (1 + bonus->GetBonusValue()));
 	}
-	if (object->GetObjectType() == 6) GetPhysicsObject()->SetLinearVelocity(GetPhysicsObject()->GetLinearVelocity()*(1-((BonusStateObject*)object)->GetBonusValue()));
+	if (object->GetObjectType() == ObjectId::SPEEDREDUCTION) GetPhysicsObject()->SetLinearVelocity(GetPhysicsObject()->GetLinearVelocity()*(1-((BonusStateObject*)object)->GetBonusValue()));
 }
 
 void NCL::CSC8503::PlayerStateObject::OnCollisionEnd(GameObject* object)

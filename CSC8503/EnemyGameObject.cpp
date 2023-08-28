@@ -41,11 +41,11 @@ EnemyGameObject::EnemyGameObject(std::string name) :StateGameObject(name) {
 
 	stateMachine->AddTransition(patrolToChase);
 	stateMachine->AddTransition(chaseToPatrol);
-	SetObjectType(8);
+	SetObjectType(ObjectId::ENEMY);
 }
 
 void EnemyGameObject::OnCollisionBegin(GameObject* object) {
-	if (object->GetObjectType() == 4) {
+	if (object->GetObjectType() == ObjectId::SPEEDBONUS) {
 		BonusStateObject* bonus = ((BonusStateObject*)object);
 		GetPhysicsObject()->SetLinearVelocity(GetPhysicsObject()->GetLinearVelocity() * (1 + bonus->GetBonusValue()));
 	}

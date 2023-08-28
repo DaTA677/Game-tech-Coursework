@@ -212,7 +212,7 @@ void PhysicsSystem::BasicCollisionDetection() {
 				//std::cout << "Collision between " << (*i)->GetName()<<" and "<<(*j)->GetName()<<std::endl;
 				/*std::cout << info.a->GetIgnoreLayer() << info.b->GetLayer() << (info.a->GetIgnoreLayer() & info.b->GetLayer());
 				std::cout << info.b->GetIgnoreLayer() << info.a->GetLayer() << (info.b->GetIgnoreLayer() & info.a->GetLayer());*/
-				if (info.a->GetObjectType() == 14 || info.b->GetObjectType() == 14) SpringResolveCollision(*info.a, *info.b, info.point);
+				if (info.a->GetObjectType() == ObjectId::SPRING || info.b->GetObjectType() == ObjectId::SPRING) SpringResolveCollision(*info.a, *info.b, info.point);
 				else ImpulseResolveCollision(*info.a, *info.b, info.point);
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);

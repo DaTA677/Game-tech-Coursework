@@ -171,6 +171,7 @@ void TutorialGame::UpdateGame(float dt) {
 			currentScene++;
 			if (currentScene == maxScene) {
 				world->ToggleTriggerbit(4);// bit 4 to check win game
+				world->ToggleTriggerbit(0);
 			}
 			else {
 				InitWorld();
@@ -260,74 +261,9 @@ void TutorialGame::UpdateGame(float dt) {
 			UpdateMainPlayerMovement(dt);
 
 			if (debug) {
-
-				if (lockedObject != nullptr) {
-					Vector3 objPos = lockedObject->GetTransform().GetPosition();
-					Vector3 camPos = objPos + lockedOffset;
-
-					Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
-
-					Matrix4 modelMat = temp.Inverse();
-
-					Quaternion q(modelMat);
-					Vector3 angles = q.ToEuler(); //nearly there now!
-
-					world->GetMainCamera()->SetPosition(camPos);
-					world->GetMainCamera()->SetPitch(angles.x);
-					world->GetMainCamera()->SetYaw(angles.y);
-				}
-
-				Debug::Print("world trigger:" + std::to_string(world->GetTrigger()), Vector2(5, 25));
-
-				if (useGravity) {
-					Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
-				}
-				else {
-					Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
-				}
-				switch (gravityDirection) {
-				case 1:
-					Debug::Print("Gravity direction: DOWN", Vector2(5, 80), Debug::RED);
-					break;
-				case 2:
-					Debug::Print("Gravity direction: UP", Vector2(5, 80), Debug::RED);
-					break;
-				case 3:
-					Debug::Print("Gravity direction: LEFT", Vector2(5, 80), Debug::RED);
-					break;
-				case 4:
-					Debug::Print("Gravity direction: RIGHT", Vector2(5, 80), Debug::RED);
-					break;
-				}
-
-				Debug::Print("Linear Damping:" + std::to_string(linearDamping), Vector2(5, 75), Debug::RED);
-
-
-				RayCollision closestCollision;
-				if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K) && selectionObject) {
-					Vector3 rayPos;
-					Vector3 rayDir;
-
-					rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);//Identify front vector
-
-					rayPos = selectionObject->GetTransform().GetPosition();
-
-					Ray r = Ray(rayPos, rayDir);
-
-					if (world->Raycast(r, closestCollision, true, selectionObject, selectionObject->GetIgnoreLayer())) {
-						if (objClosest) {
-							objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-						}
-						objClosest = (GameObject*)closestCollision.node;
-
-						objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
-						Debug::DrawLine(rayPos, closestCollision.collidedAt, Vector4(1, 0, 0, 1), 10);
-					}
-				}
-
-				Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
-				SelectObject();
-				MoveSelectedObject();
+				UpdateDebugKeys();
+				UpdateDebugState();
+				
 			}
 			world->UpdateWorld(dt);
 			renderer->Update(dt);
@@ -353,12 +289,148 @@ void TutorialGame::UpdateGame(float dt) {
 	Debug::UpdateRenderables(dt);
 }
 
+void TutorialGame::UpdateDebugState() {
+	if (lockedObject != nullptr) {
+		Vector3 objPos = lockedObject->GetTransform().GetPosition();
+		Vector3 camPos = objPos + lockedOffset;
+
+		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
+
+		Matrix4 modelMat = temp.Inverse();
+
+		Quaternion q(modelMat);
+		Vector3 angles = q.ToEuler(); //nearly there now!
+
+		world->GetMainCamera()->SetPosition(camPos);
+		world->GetMainCamera()->SetPitch(angles.x);
+		world->GetMainCamera()->SetYaw(angles.y);
+	}
+
+	Debug::Print("world trigger:" + std::to_string(world->GetTrigger()), Vector2(5, 25));
+
+	if (useGravity) {
+		Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
+	}
+	else {
+		Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
+	}
+	switch (gravityDirection) {
+	case 1:
+		Debug::Print("Gravity direction: DOWN", Vector2(5, 80), Debug::RED);
+		break;
+	case 2:
+		Debug::Print("Gravity direction: UP", Vector2(5, 80), Debug::RED);
+		break;
+	case 3:
+		Debug::Print("Gravity direction: LEFT", Vector2(5, 80), Debug::RED);
+		break;
+	case 4:
+		Debug::Print("Gravity direction: RIGHT", Vector2(5, 80), Debug::RED);
+		break;
+	}
+
+	Debug::Print("Linear Damping:" + std::to_string(linearDamping), Vector2(5, 75), Debug::RED);
+
+
+	RayCollision closestCollision;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K) && selectionObject) {
+		Vector3 rayPos;
+		Vector3 rayDir;
+
+		rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);//Identify front vector
+
+		rayPos = selectionObject->GetTransform().GetPosition();
+
+		Ray r = Ray(rayPos, rayDir);
+
+		if (world->Raycast(r, closestCollision, true, selectionObject, selectionObject->GetIgnoreLayer())) {
+			if (objClosest) {
+				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+			}
+			objClosest = (GameObject*)closestCollision.node;
+
+			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
+			Debug::DrawLine(rayPos, closestCollision.collidedAt, Vector4(1, 0, 0, 1), 10);
+		}
+	}
+
+	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
+	SelectObject();
+	MoveSelectedObject();
+}
+
+void NCL::CSC8503::TutorialGame::UpdateDebugKeys()
+{
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
+		physics->SetGravity(Vector3(0.0f, 9.8f, 0.0f));
+		gravityDirection = 2;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM8)) {
+		physics->SetGravity(Vector3(-9.8f, 0.0f, 0.0f));
+		gravityDirection = 3;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM9)) {
+		physics->SetGravity(Vector3(0.0f, -9.8f, 0.0f));
+		gravityDirection = 1;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
+		physics->SetGravity(Vector3(9.8f, 0.0f, 0.0f));
+		gravityDirection = 4;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::MINUS)) {
+		linearDamping -= 0.01;
+		physics->SetLinearDamping(linearDamping);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PLUS)) {
+		linearDamping += 0.01;
+		physics->SetLinearDamping(linearDamping);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
+		InitCamera(); //F2 will reset the camera to a specific default place
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
+		MoveMainPlayer(); //F3 will toggle the camera and player movements
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
+		world->SetTrigger(4);
+
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
+		world->SetTrigger(8);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
+		world->SetTrigger(0);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G)) {
+		useGravity = !useGravity; //Toggle gravity!
+		physics->UseGravity(useGravity);
+	}
+
+	if (lockedObject) {
+		LockedObjectMovement();
+	}
+	else {
+		DebugObjectMovement();
+	}
+}
+
 void TutorialGame::CheckState() {
 	vector<StateGameObject*>temp;
 	for (int i = 0; i < states.size(); i++) {
 		if ((!states[i]->IsActive() || states[i]->ToDelete()) && !states[i]->IsAdded()) {
 			score += states[i]->GetScore();
-			if (states[i]->GetObjectType() == 7) itemCount--;
+			if (states[i]->GetObjectType() == ObjectId::OBSTACLE) itemCount--;
 			states[i]->SetAdded(true);
 		}
 		if(states[i]->ToDelete()){
@@ -377,72 +449,7 @@ void TutorialGame::UpdateKeys() {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
 		InitWorld(); //We can reset the simulation at any time with F1
 		selectionObject = nullptr;
-	}
-	if (debug) {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
-			physics->SetGravity(Vector3(0.0f, 9.8f, 0.0f));
-			gravityDirection = 2;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM8)) {
-			physics->SetGravity(Vector3(-9.8f, 0.0f, 0.0f));
-			gravityDirection = 3;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM9)) {
-			physics->SetGravity(Vector3(0.0f, -9.8f, 0.0f));
-			gravityDirection = 1;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
-			physics->SetGravity(Vector3(9.8f, 0.0f, 0.0f));
-			gravityDirection = 4;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::MINUS)) {
-			linearDamping -= 0.01;
-			physics->SetLinearDamping(linearDamping);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PLUS)) {
-			linearDamping += 0.01;
-			physics->SetLinearDamping(linearDamping);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
-			InitCamera(); //F2 will reset the camera to a specific default place
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
-			MoveMainPlayer(); //F3 will toggle the camera and player movements
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
-			world->SetTrigger(4);
-
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
-			world->SetTrigger(8);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
-			world->SetTrigger(0);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G)) {
-			useGravity = !useGravity; //Toggle gravity!
-			physics->UseGravity(useGravity);
-		}
-
-		if (lockedObject) {
-			LockedObjectMovement();
-		}
-		else {
-			DebugObjectMovement();
-		}
-	}
-	
+	}	
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
 	//allowing the other one to stretch too much etc. Shuffling the order so that it
@@ -577,8 +584,6 @@ void TutorialGame::InitWorld() {
 	//InitGoatGameWorld();
 	//AddWallToWorld(Vector3(0, 0, 0),1);
 	//InitGameWorldFromFile("TestGrid2.txt");
-	
-	world->SetTrigger(0);
 }
 
 void TutorialGame::MoveMainPlayer() {
@@ -924,7 +929,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position, int size) {
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(1);
+	floor->SetObjectType(ObjectId::WORLD);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -950,7 +955,7 @@ GameObject* TutorialGame::AddSpringToWorld(const Vector3& position, int size) {
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(14);
+	floor->SetObjectType(ObjectId::SPRING);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -1001,7 +1006,7 @@ BonusStateObject* TutorialGame::AddHealingZoneToWorld(const Vector3& position, i
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(3);
+	floor->SetObjectType(ObjectId::HEALTHBONUS);
 	floor->SetBonusValue(0.5);
 
 	world->AddGameObject(floor);
@@ -1027,7 +1032,7 @@ BonusStateObject* TutorialGame::AddMudZoneToWorld(const Vector3& position, int s
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(6);
+	floor->SetObjectType(ObjectId::SPEEDREDUCTION);
 	floor->SetBonusValue(0.1f);
 
 	world->AddGameObject(floor);
@@ -1053,7 +1058,7 @@ BonusStateObject* TutorialGame::AddIceZoneToWorld(const Vector3& position, int s
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(4);
+	floor->SetObjectType(ObjectId::SPEEDBONUS);
 	floor->SetBonusValue(0.05f);
 
 	world->AddGameObject(floor);
@@ -1080,7 +1085,7 @@ BonusStateObject* TutorialGame::AddLavaZoneToWorld(const Vector3& position, int 
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	floor->SetLayer(1);
-	floor->SetObjectType(5);
+	floor->SetObjectType(ObjectId::HEALTHREDUCTION);
 	floor->SetBonusValue(0.5);
 
 	world->AddGameObject(floor);
@@ -1411,7 +1416,7 @@ BonusStateObject* TutorialGame::AddSpeedBonusToWorld(const Vector3& position)
 	apple->GetPhysicsObject()->InitSphereInertia();
 	apple->SetLayer(4);
 	apple->SetIgnoreLayer(128);
-	apple->SetObjectType(4);
+	apple->SetObjectType(ObjectId::SPEEDBONUS);
 	apple->SetBonusValue(0.5);
 	apple->SetScore(100);
 
@@ -1441,7 +1446,7 @@ WinStateObject* TutorialGame::AddKeyToWorld(const Vector3& position)
 	apple->GetPhysicsObject()->InitSphereInertia();
 	apple->SetLayer(4);
 	apple->SetIgnoreLayer(128);
-	apple->SetObjectType(11);
+	apple->SetObjectType(ObjectId::KEY);
 
 	world->AddGameObject(apple);
 

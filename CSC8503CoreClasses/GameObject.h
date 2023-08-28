@@ -28,7 +28,8 @@ namespace NCL {
 		SECRET = 9,
 		WIN = 10,
 		KEY=11,
-		IGNORED=12
+		IGNORED=12,
+		SPRING =14
 	};
 
 	namespace CSC8503 {
@@ -112,8 +113,8 @@ namespace NCL {
 			int GetIgnoreLayer() const { return ignoreLayer; }
 			void SetIgnoreLayer(const int& l) { ignoreLayer = l; }
 
-			void SetObjectType(int t) { type = (ObjectId)t; }
-			int GetObjectType() const { return (int)type; }
+			void SetObjectType(ObjectId t) { type = (ObjectId)t; }
+			ObjectId GetObjectType() const { return type; }
 
 			int		GetWorldID() const {
 				return worldID;

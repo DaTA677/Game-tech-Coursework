@@ -45,7 +45,7 @@ DoorBehaviourObject::DoorBehaviourObject(std::string name) {
 	rootSequence->AddChild(checkSwitchoff);
 
 
-	SetObjectType(1);
+	SetObjectType(ObjectId::WORLD);
 
 }
 

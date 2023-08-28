@@ -35,7 +35,7 @@ ObstacleStateObject::ObstacleStateObject(std::string name){
 
 	stateMachine->AddTransition(starttoEnd);
 
-	SetObjectType(7);
+	SetObjectType(ObjectId::OBSTACLE);
 
 }
 
@@ -47,10 +47,10 @@ void ObstacleStateObject::OnCollisionEnd(GameObject* object) {
 	
 }
 void ObstacleStateObject::OnCollisionBegin(GameObject* object) {
-	if (object->GetObjectType() == 2 || object->GetObjectType() == 8) {
+	if (object->GetObjectType() == ObjectId::PLAYER || object->GetObjectType() == ObjectId::ENEMY) {
 		health -= object->GetPhysicsObject()->GetLinearVelocity().Length();
 	}
-	if (object->GetObjectType() == 8) {
+	if (object->GetObjectType() == ObjectId::ENEMY) {
 		score = score * 1.15f;
 	}
 

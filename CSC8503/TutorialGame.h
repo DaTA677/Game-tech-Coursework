@@ -69,6 +69,9 @@ namespace NCL {
 
 			void ClearStates();
 
+			void UpdateDebugState();
+			void UpdateDebugKeys();
+
 			void SetMainPlayer(PlayerStateObject* g) { mainPlayer = g; }
 			GameObject* GetMainPlayer() const { return mainPlayer; }
 
